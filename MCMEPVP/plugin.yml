@@ -1,0 +1,9 @@
+name: MCMEPVP
+main: at.doebi.MCMEPVP
+version: 1.0.0
+commands:
+   pvp:
+      description: This is a demo command.
+      usage: /<command> [player]
+      permission: mcmepvp.pvp
+      permission-message: FUCK OFF!
