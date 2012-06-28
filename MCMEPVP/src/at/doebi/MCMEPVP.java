@@ -1,4 +1,10 @@
+package at.doebi;
+
 import java.util.HashMap;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class MCMEPVP extends JavaPlugin{
 	//create a HashMap and a count for player teams
