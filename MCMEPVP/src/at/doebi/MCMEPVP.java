@@ -30,6 +30,7 @@ public class MCMEPVP extends JavaPlugin{
 	
 	public static void addTeam(Player player,String Team){
 		//clear Inventory
+		player.sendMessage("You're now in Team " + Team + "!");
 		player.getInventory().clear();
 		if(Team == "red"){
 			Red++;
@@ -83,7 +84,7 @@ public class MCMEPVP extends JavaPlugin{
 			//What to do when a player types /pvp
 			String method = args[0];
 			//JOIN
-			if(method == "join"){
+			if(method.equalsIgnoreCase("join")){
 				//Assign player to a team with fewest members
 				if(Blue > Red){
 					addTeam(player,"Red");
@@ -101,37 +102,32 @@ public class MCMEPVP extends JavaPlugin{
 						}
 					}
 				}
-			}else{
-				//LEAVE
-				if(method == "leave"){
-					//Remove Player from old Team and assign to spectator if they leave
-					removeTeam(player);
-				}else{
-					//CLASS
-					if(method == "class"){
-						String classname = args[1];
-						//Allow mods to create classes by storing their inventory in a hashmap
-						//with the class as the key
-						if(classname == "set"){
-							String classtoset = args[2];
-							PlayerInventory createinventory = player.getInventory();
-							Classes.put(classtoset, createinventory);
-						}
-						else{
-							//set a player's inventory to that of the given class if it exists
-							Inventory classinventory = Classes.get(classname);
-							if(classinventory == null){
-								player.sendMessage("no such class");
-							}
-							else{
-								player.getInventory().clear();
-								ItemStack[] contents = classinventory.getContents();
-								player.getInventory().setContents(contents);
-							}
-						}
-					}else{
-						//METHOD NOT VALID
-						sender.sendMessage("Method "+method+" is no valid!");
+			}
+			//LEAVE
+			if(method.equalsIgnoreCase("leave")){
+				//Remove Player from old Team and assign to spectator if they leave
+				removeTeam(player);
+			}
+			//CLASS
+			if(method.equalsIgnoreCase("class")){
+				String classname = args[1];
+				//Allow mods to create classes by storing their inventory in a hashmap
+				//with the class as the key
+				if(classname == "set"){
+					String classtoset = args[2];
+					PlayerInventory createinventory = player.getInventory();
+					Classes.put(classtoset, createinventory);
+				}
+				else{
+					//set a player's inventory to that of the given class if it exists
+					Inventory classinventory = Classes.get(classname);
+					if(classinventory == null){
+						player.sendMessage("no such class");
+					}
+					else{
+						player.getInventory().clear();
+						ItemStack[] contents = classinventory.getContents();
+						player.getInventory().setContents(contents);
 					}
 				}
 			}
