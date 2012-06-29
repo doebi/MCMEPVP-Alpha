@@ -16,7 +16,6 @@ public class MCMEPVPListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH)
 	void onPlayerJoin(final PlayerLoginEvent event){
 		MCMEPVP.addTeam(event.getPlayer(),"spectator");
-		System.out.print("Added " + event.getPlayer() + " to Spectators!");
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)

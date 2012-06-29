@@ -26,19 +26,26 @@ public class MCMEPVP extends JavaPlugin{
 	public void onEnable() {
 		//registering Listener
 		getServer().getPluginManager().registerEvents(new MCMEPVPListener(this), this);
+        for (Player currentplayer : Bukkit.getOnlinePlayers()) {
+        	MCMEPVP.addTeam(currentplayer,"spectator");
+        }
 	}
 	
 	public static void addTeam(Player player,String Team){
 		//clear Inventory
-		player.sendMessage(ChatColor.YELLOW + "You're now in Team " + Team.toUpperCase() + "!");
 		player.getInventory().clear();
-		if(Team == "red"){
-			Red++;
-			PlayerTeams.put(player.getName(), "red");
+		if(Team == "spectator"){
+			PlayerTeams.put(player.getName(), "spectator");
 		}else{
-			if(Team == "blue"){
-				Blue++;
-				PlayerTeams.put(player.getName(), "blue"); 
+			player.sendMessage(ChatColor.YELLOW + "You're now in Team " + Team.toUpperCase() + "!");
+			if(Team == "red"){
+				Red++;
+				PlayerTeams.put(player.getName(), "red");
+			}else{
+				if(Team == "blue"){
+					Blue++;
+					PlayerTeams.put(player.getName(), "blue"); 
+				}
 			}
 		}
 		
