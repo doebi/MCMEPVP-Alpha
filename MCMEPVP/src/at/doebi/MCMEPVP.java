@@ -97,20 +97,26 @@ public class MCMEPVP extends JavaPlugin{
 			String method = args[0];
 			//JOIN
 			if(method.equalsIgnoreCase("join")){
-				//Assign player to a team with fewest members
-				if(Blue > Red){
-					addTeam(player,"red");
+				String Team = PlayerTeams.get(player.getName());
+				//Check if player has a team already
+				if(Team == "red" || Team == "blue"){
+					player.sendMessage(ChatColor.DARK_RED + "You are already Member of Team " + Team.toUpperCase() + "!");
 				}else{
-					if(Blue < Red){
-						addTeam(player,"blue");
-					}
-					else{
-						boolean random = (Math.random() < 0.5);
-						if(random == true){
-							addTeam(player,"red");
+					//Assign player to a team with fewest members
+					if(Blue > Red){
+						addTeam(player,"red");
+					}else{
+						if(Blue < Red){
+							addTeam(player,"blue");
 						}
 						else{
-							addTeam(player,"blue"); 
+							boolean random = (Math.random() < 0.5);
+							if(random == true){
+								addTeam(player,"red");
+							}
+							else{
+								addTeam(player,"blue"); 
+							}
 						}
 					}
 				}
