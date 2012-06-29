@@ -30,21 +30,22 @@ public class MCMEPVP extends JavaPlugin{
 	
 	public static void addTeam(Player player,String Team){
 		//clear Inventory
-		player.sendMessage("You're now in Team " + Team + "!");
+		player.sendMessage(ChatColor.YELLOW + "You're now in Team " + Team.toUpperCase() + "!");
 		player.getInventory().clear();
 		if(Team == "red"){
 			Red++;
-			PlayerTeams.put(player.getName(), "blue");
+			PlayerTeams.put(player.getName(), "red");
 		}else{
 			if(Team == "blue"){
 				Blue++;
-				PlayerTeams.put(player.getName(), "red"); 
+				PlayerTeams.put(player.getName(), "blue"); 
 			}
 		}
 		
 	}
 	
 	public static void removeTeam(Player player){
+		player.sendMessage(ChatColor.YELLOW + "You left your Team!");
 		//set player Spectator
 		PlayerTeams.put(player.getName(), "spectator");
 		//clear Inventory
@@ -64,49 +65,55 @@ public class MCMEPVP extends JavaPlugin{
 	public static void sendToTeam(String Message, Player chatter) {
         for (Player player : Bukkit.getOnlinePlayers()) {
         	String Team = PlayerTeams.get(chatter.getName());
-        	ChatColor Color = ChatColor.WHITE;
+        	String PlayerTeam = PlayerTeams.get(player.getName());
+        	String label = "[Jerk] ";
         	if(Team == "red"){
-        		Color = ChatColor.RED;
+        		label = ChatColor.RED + "[Team Red] ";
         	}
         	if(Team == "blue"){
-        		Color = ChatColor.BLUE;
+        		label = ChatColor.BLUE + "[Team Blue] ";
         	}
-            if (PlayerTeams.get(player.getName()) == Team || PlayerTeams.get(player.getName()) == "spectator") {
-                player.sendMessage(Color +"[Team "+ Team + "] " + chatter.getName() + ": " + ChatColor.WHITE + Message);
-            }
+        	if(Team == "spectator"){
+        		label = "[Spectator] ";
+        	}
+        	if(PlayerTeam == "spectator" || PlayerTeam == Team){
+        		player.sendMessage(label + chatter.getName() + ": " + ChatColor.WHITE + Message);
+        	}
         }
     }
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
+		//Identify the player
+		Player player = sender.getServer().getPlayer(sender.getName());
 		if(cmd.getName().equalsIgnoreCase("pvp")){
-			//Identify the player
-			Player player = sender.getServer().getPlayer(sender.getName());
 			//What to do when a player types /pvp
 			String method = args[0];
 			//JOIN
 			if(method.equalsIgnoreCase("join")){
 				//Assign player to a team with fewest members
 				if(Blue > Red){
-					addTeam(player,"Red");
+					addTeam(player,"red");
 				}else{
 					if(Blue < Red){
-						addTeam(player,"Blue");
+						addTeam(player,"blue");
 					}
 					else{
 						boolean random = (Math.random() < 0.5);
 						if(random == true){
-							addTeam(player,"Red");
+							addTeam(player,"red");
 						}
 						else{
-							addTeam(player,"Blue"); 
+							addTeam(player,"blue"); 
 						}
 					}
 				}
+				return true;
 			}
 			//LEAVE
 			if(method.equalsIgnoreCase("leave")){
 				//Remove Player from old Team and assign to spectator if they leave
 				removeTeam(player);
+				return true;
 			}
 			//CLASS
 			if(method.equalsIgnoreCase("class")){
@@ -130,8 +137,20 @@ public class MCMEPVP extends JavaPlugin{
 						player.getInventory().setContents(contents);
 					}
 				}
+				return true;
 			}
-			return true;
+		}
+		if(cmd.getName().equalsIgnoreCase("shout")){
+			String msg = args[0];
+            if (args.length > 1) {
+                for (int i = 1; i < args.length; i++) {
+                    msg += " " + args[i];
+                }
+            }
+            for (Player currentplayer : Bukkit.getOnlinePlayers()) {
+            	currentplayer.sendMessage(ChatColor.GRAY + player.getName() + " shouts: " + msg);
+    			return true;
+            }
 		}
 		return false; 
 	}

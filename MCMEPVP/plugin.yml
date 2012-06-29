@@ -3,7 +3,12 @@ main: at.doebi.MCMEPVP
 version: 1.0.0
 commands:
    pvp:
-      description: This is a demo command.
-      usage: /<command> [player]
+      description: PVP.
+      usage: /<command> [join|leave|class]
+      permission: mcmepvp.pvp
+      permission-message: FUCK OFF!
+   shout:
+      description: Shout.
+      usage: /<command> [msg]
       permission: mcmepvp.pvp
       permission-message: FUCK OFF!
