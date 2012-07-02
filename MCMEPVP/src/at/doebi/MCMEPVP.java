@@ -65,8 +65,7 @@ public class MCMEPVP extends JavaPlugin{
 			if(Team == "blue"){
 				Blue--;
 			}
-		}
-		
+		}	
 	}
 	
 	public static void sendToTeam(String Message, Player chatter) {
