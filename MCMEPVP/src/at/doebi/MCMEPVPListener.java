@@ -1,8 +1,10 @@
 package at.doebi;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -32,5 +34,14 @@ public class MCMEPVPListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH)
 	void onPlayerDeath(final PlayerDeathEvent event){
 		MCMEPVP.removeTeam(event.getEntity());
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+	void onPlayerDamage(final EntityDamageByEntityEvent  event){
+		String Damager = event.getDamager().getType().getName().toLowerCase();;
+        String Damaged = event.getEntityType().getName().toLowerCase();;
+		if((event.getDamager().getType().equals(EntityType.PLAYER) && event.getEntityType().equals(EntityType.PLAYER)) && (MCMEPVP.PlayerTeams.get(Damager) == MCMEPVP.PlayerTeams.get(Damaged))){
+			event.setCancelled(true);
+		}
 	}
 }
