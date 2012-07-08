@@ -5,10 +5,15 @@ commands:
    pvp:
       description: PVP
       usage: /<command> [join|leave|class]
-      permission: mcmepvp.pvp
+      permission: mcmepvp.player
       permission-message: FUCK OFF!
    shout:
       description: Shout a message to Everyone!
       usage: /<command> [msg]
-      permission: mcmepvp.pvp
+      permission: mcmepvp.player
+      permission-message: FUCK OFF!
+   pa:
+      description: PVP Admin
+      usage: /<command> [start]
+      permission: mcmepvp.admin
       permission-message: FUCK OFF!

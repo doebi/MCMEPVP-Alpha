@@ -82,7 +82,10 @@ public class MCMEPVP extends JavaPlugin{
         	if(Team == "spectator"){
         		label = "[Spectator] ";
         	}
-        	if(PlayerTeam == "spectator" || PlayerTeam == Team){
+        	if(Team == "participant"){
+        		label = "[Participant] ";
+        	}
+        	if(PlayerTeam == "spectator" || PlayerTeam == "participant" || PlayerTeam == Team){
         		player.sendMessage(label + chatter.getName() + ": " + ChatColor.WHITE + Message);
         	}
         }
@@ -95,29 +98,15 @@ public class MCMEPVP extends JavaPlugin{
 			//What to do when a player types /pvp
 			String method = args[0];
 			//JOIN
+			//TODO Prevent joining when game is running
 			if(method.equalsIgnoreCase("join")){
 				String Team = PlayerTeams.get(player.getName());
 				//Check if player has a team already
-				if(Team == "red" || Team == "blue"){
-					player.sendMessage(ChatColor.DARK_RED + "You are already Member of Team " + Team.toUpperCase() + "!");
+				if(Team == "participant"){
+					player.sendMessage(ChatColor.DARK_RED + "You are already participating in the PVP Event!");
 				}else{
-					//Assign player to a team with fewest members
-					if(Blue > Red){
-						addTeam(player,"red");
-					}else{
-						if(Blue < Red){
-							addTeam(player,"blue");
-						}
-						else{
-							boolean random = (Math.random() < 0.5);
-							if(random == true){
-								addTeam(player,"red");
-							}
-							else{
-								addTeam(player,"blue"); 
-							}
-						}
-					}
+					//queue Player
+					queuePlayer(player);
 				}
 				return true;
 			}
@@ -164,6 +153,55 @@ public class MCMEPVP extends JavaPlugin{
     			return true;
             }
 		}
+		if(cmd.getName().equalsIgnoreCase("pa")){
+			String method = args[0];
+			if(method.equalsIgnoreCase("start")){
+		        //Broadcast
+				getServer().broadcastMessage(ChatColor.GREEN + "The PVP Event starts in a few seconds!");
+				getServer().broadcastMessage(ChatColor.GREEN + "All Participants will be assigned to a team and teleported to their spawn!");
+		        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		           public void run() {
+				        for (Player user : Bukkit.getOnlinePlayers()) {
+					        //Assign Teams
+				        	if(PlayerTeams.get(user.getName()) == "participant"){
+								if(Blue > Red){
+									addTeam(user,"red");
+								}else{
+									if(Blue < Red){
+										addTeam(user,"blue");
+									}
+									else{
+										boolean random = (Math.random() < 0.5);
+										if(random == true){
+											addTeam(user,"red");
+										}
+										else{
+											addTeam(user,"blue"); 
+										}
+									}
+								}	
+				        	}
+				        	//Teleport User
+				        	if(PlayerTeams.get(user.getName()) == "red"){
+				        		//TP to red
+				        	}
+				        	if(PlayerTeams.get(user.getName()) == "blue"){
+				        		//TP to blue
+				        	}
+				        	if(PlayerTeams.get(user.getName()) == "spectator"){
+				        		//TP to spectator
+				        	}
+				        }
+		           }
+		        }, 60L);
+				return true;
+			}
+		}
 		return false; 
+	}
+
+	private void queuePlayer(Player player) {
+		PlayerTeams.put(player.getName(), "participant");
+		player.sendMessage(ChatColor.YELLOW + "You are participating! Wait for the next Event to start!");
 	}
 }

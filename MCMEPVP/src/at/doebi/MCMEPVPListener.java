@@ -45,10 +45,10 @@ public class MCMEPVPListener implements Listener{
 			Player Victim = (Player) event.getEntity();
 		    String AttackerTeam = MCMEPVP.PlayerTeams.get(Attacker.getName());
 		    String VictimTeam = MCMEPVP.PlayerTeams.get(Victim.getName());
-		    if(AttackerTeam != "spectator" && VictimTeam != "spectator" && AttackerTeam != VictimTeam){
+		    if(AttackerTeam != "spectator" && VictimTeam != "spectator" && AttackerTeam != "participant" && VictimTeam != "participant" && AttackerTeam != VictimTeam){
 		    	//Victim got attacked by Attacker and both are in rivaling Teams
 		    }else{
-		    	//Either friendly fire or Spectator involved in fight
+		    	//Either friendly fire or Spectator or Participant involved in fight
 		    	Attacker.sendMessage(ChatColor.DARK_RED + "You can't attack " + Victim.getName() + "!");
 		    	event.setCancelled(true);
 		    }
