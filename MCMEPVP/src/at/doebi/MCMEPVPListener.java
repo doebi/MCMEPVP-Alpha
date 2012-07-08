@@ -1,6 +1,8 @@
 package at.doebi;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -37,13 +39,19 @@ public class MCMEPVPListener implements Listener{
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
-	void onPlayerDamage(final EntityDamageByEntityEvent  event){
-		String Damager = event.getDamager().getType().getName().toLowerCase();
-        String Damaged = event.getEntityType().getName().toLowerCase();
-		if((event.getDamager().getType().equals(EntityType.PLAYER) && event.getEntityType().equals(EntityType.PLAYER))
-				&& ((MCMEPVP.PlayerTeams.get(Damager) == MCMEPVP.PlayerTeams.get(Damaged))
-						|| MCMEPVP.PlayerTeams.get(Damager) == "spectator")){
-			event.setCancelled(true);
+	void onPlayerDamage(final EntityDamageByEntityEvent event){
+		if(event.getDamager().getType().equals(EntityType.PLAYER) && event.getEntity().getType().equals(EntityType.PLAYER)){
+			Player Attacker = (Player) event.getDamager();
+			Player Victim = (Player) event.getEntity();
+		    String AttackerTeam = MCMEPVP.PlayerTeams.get(Attacker.getName());
+		    String VictimTeam = MCMEPVP.PlayerTeams.get(Victim.getName());
+		    if(AttackerTeam != "spectator" && VictimTeam != "spectator" && AttackerTeam != VictimTeam){
+		    	//Victim got attacked by Attacker and both are in rivaling Teams
+		    }else{
+		    	//Either friendly fire or Spectator involved in fight
+		    	Attacker.sendMessage(ChatColor.DARK_RED + "You can't attack " + Victim.getName() + "!");
+		    	event.setCancelled(true);
+		    }
 		}
 	}
 }
