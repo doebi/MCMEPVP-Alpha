@@ -29,8 +29,12 @@ public class MCMEPVPListener implements Listener{
 
 	@EventHandler(priority = EventPriority.HIGH)
 	void onPlayerChat(final PlayerChatEvent event){
-		MCMEPVP.sendToTeam(event.getMessage(), event.getPlayer());
-		event.setCancelled(true);
+		if(event.isCancelled()){
+			
+		}else{
+			MCMEPVP.sendToTeam(event.getMessage(), event.getPlayer());
+			event.setCancelled(true);	
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
