@@ -4,12 +4,7 @@ version: 1.0.0
 commands:
    pvp:
       description: PVP
-      usage: /<command> [join|leave|class]
+      usage: /<command> [join|class|start|set|stop]
    shout:
       description: Shout a message to Everyone!
       usage: /<command> [msg]
-   pa:
-      description: PVP Admin
-      usage: /<command> [start|set]
-      permission: mcmepvp.admin
-      permission-message: You're not an Admin!

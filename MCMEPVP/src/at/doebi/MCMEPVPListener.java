@@ -1,5 +1,6 @@
 package at.doebi;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -39,7 +40,27 @@ public class MCMEPVPListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	void onPlayerDeath(final PlayerDeathEvent event){
-		MCMEPVP.removeTeam(event.getEntity());
+		if(MCMEPVP.GameStatus == 1){
+			Player player = event.getEntity();
+			String Team = MCMEPVP.PlayerTeams.get(player.getName());
+			if(Team == "spectator"){
+				event.setDeathMessage(ChatColor.YELLOW + "Spectator " + player.getName() + " was tired watching this fight!");
+			}
+			if(Team == "red"){
+				event.setDeathMessage(ChatColor.RED + "Team Red " + ChatColor.YELLOW + " lost " + player.getName());
+			}
+			if(Team =="blue"){
+				event.setDeathMessage(ChatColor.BLUE + "Team Blue " + ChatColor.YELLOW + " lost " + player.getName());
+			}
+			MCMEPVP.removeTeam(event.getEntity());
+			if(MCMEPVP.BlueMates == 0){
+				Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team " + ChatColor.RED + "Red" + ChatColor.GREEN + " wins!");
+				MCMEPVP.resetGame();
+			}else if(MCMEPVP.RedMates == 0){
+				Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team " + ChatColor.BLUE + "Blue" + ChatColor.GREEN + " wins!");
+				MCMEPVP.resetGame();
+			}
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
