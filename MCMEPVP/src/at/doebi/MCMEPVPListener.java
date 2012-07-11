@@ -12,6 +12,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class MCMEPVPListener implements Listener{
 	
@@ -26,6 +27,7 @@ public class MCMEPVPListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH)
 	void onPlayerLeave(final PlayerQuitEvent event){
 		MCMEPVP.removeTeam(event.getPlayer());
+		//TODO check if every online player is participating and start if true
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -40,6 +42,8 @@ public class MCMEPVPListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	void onPlayerDeath(final PlayerDeathEvent event){
+		event.getDrops().clear();
+		event.getDrops().add(new ItemStack(364, 1));
 		if(MCMEPVP.GameStatus == 1){
 			Player player = event.getEntity();
 			String Team = MCMEPVP.PlayerTeams.get(player.getName());
@@ -47,10 +51,10 @@ public class MCMEPVPListener implements Listener{
 				event.setDeathMessage(ChatColor.YELLOW + "Spectator " + player.getName() + " was tired watching this fight!");
 			}
 			if(Team == "red"){
-				event.setDeathMessage(ChatColor.RED + "Team Red " + ChatColor.YELLOW + " lost " + player.getName());
+				event.setDeathMessage(ChatColor.RED + "Team Red " + ChatColor.YELLOW + "lost " + player.getName());
 			}
 			if(Team =="blue"){
-				event.setDeathMessage(ChatColor.BLUE + "Team Blue " + ChatColor.YELLOW + " lost " + player.getName());
+				event.setDeathMessage(ChatColor.BLUE + "Team Blue " + ChatColor.YELLOW + "lost " + player.getName());
 			}
 			MCMEPVP.removeTeam(event.getEntity());
 			if(MCMEPVP.BlueMates == 0){

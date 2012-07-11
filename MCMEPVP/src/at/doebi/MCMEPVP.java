@@ -32,41 +32,48 @@ public class MCMEPVP extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(new MCMEPVPListener(this), this);
         Classes = new HashMap<String, Inventory>();
         Spawns = new HashMap<String, Vector>();
-        resetGame();
         //load spawns into HashMap
         Spawns.put("blue", (Vector) this.getConfig().get("spawns.blue"));
         Spawns.put("red", (Vector) this.getConfig().get("spawns.red"));
         Spawns.put("spectator", (Vector) this.getConfig().get("spawns.spectator"));
+        resetGame();
 	}
 	
 	public static void addTeam(Player player,String Team){
 		//clear Inventory
 		player.getInventory().clear();
 		if(Team == "spectator"){
+			//TODO player.setFlying(true);
 			PlayerTeams.put(player.getName(), "spectator");
 			player.setPlayerListName(ChatColor.WHITE + player.getName());
+			player.setDisplayName(ChatColor.WHITE + player.getName());
+			player.getInventory().setArmorContents(null);
 		}else{
+			//TODO gives error :( 
+			//player.setFlying(false);
 			player.sendMessage(ChatColor.YELLOW + "You're now in Team " + Team.toUpperCase() + "!");
 			if(Team == "red"){
 				RedMates++;
 				PlayerTeams.put(player.getName(), "red");
 				player.setPlayerListName(ChatColor.RED + player.getName());
+				player.setDisplayName(ChatColor.RED + player.getName());
+				player.getInventory().setHelmet(new ItemStack(35, 1, (short) 0, (byte) 14));
 			}else{
 				if(Team == "blue"){
 					BlueMates++;
 					PlayerTeams.put(player.getName(), "blue"); 
 					player.setPlayerListName(ChatColor.BLUE + player.getName());
+					player.setDisplayName(ChatColor.BLUE + player.getName());
+					player.getInventory().setHelmet(new ItemStack(35, 1, (short) 0, (byte) 11));
 				}
 			}
-		}	
+		}
 	}
 	
 	public static void removeTeam(Player player){
-		player.sendMessage(ChatColor.YELLOW + "You left your Team!");
 		//set player Spectator
 		String Team = PlayerTeams.get(player.getName());
-		PlayerTeams.put(player.getName(), "spectator");
-		player.setPlayerListName(ChatColor.WHITE + player.getName());
+		addTeam(player,"spectator");
 		//clear Inventory
 		player.getInventory().clear();
 		//adjust Playercounter
@@ -132,6 +139,7 @@ public class MCMEPVP extends JavaPlugin{
 					}
 				}
 				//CLASS
+				/*
 				if(method.equalsIgnoreCase("class")){
 					String classname = args[1];
 					//Allow mods to create classes by storing their inventory in a hashmap
@@ -147,7 +155,7 @@ public class MCMEPVP extends JavaPlugin{
 						player.getInventory().setContents(contents);
 					}
 					return true;
-				}
+				}*/
 				//START
 				if(method.equalsIgnoreCase("start")){
 					if(player.hasPermission("mcmepvp.admin")){
@@ -215,15 +223,6 @@ public class MCMEPVP extends JavaPlugin{
 				//STOP
 				if(method.equalsIgnoreCase("stop")){
 					if(player.hasPermission("mcmepvp.admin")){
-				        for (Player currentplayer : Bukkit.getOnlinePlayers()) {
-				        	String Team = PlayerTeams.get(currentplayer);
-				        	Vector vec = Spawns.get("spectator");
-				        	World world = Bukkit.getWorld("world");
-				        	Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
-				        	if(Team == "red" || Team == "blue"){
-				        		currentplayer.teleport(loc);
-				        	}
-				        }
 						Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The PVP Event has been aborted by an admin!");
 						resetGame();
 						return true;
@@ -239,7 +238,11 @@ public class MCMEPVP extends JavaPlugin{
 	                    msg += " " + args[i];
 	                }
 	            }
-				Bukkit.getServer().broadcastMessage(ChatColor.GRAY + player.getName() + " shouts: " + msg);
+	            if(PlayerTeams.get(player.getName()) == "spectator"){
+					player.sendMessage(ChatColor.DARK_RED + "Spectators aren't allowed to shout!");
+	            }else{
+					Bukkit.getServer().broadcastMessage(ChatColor.GRAY + player.getName() + " shouts: " + msg);
+	            }
 				return true;
 			}
 		}
@@ -247,15 +250,21 @@ public class MCMEPVP extends JavaPlugin{
 	}
 
 	static void resetGame() {
-        GameStatus = 0;
         BlueMates = 0;
         RedMates = 0;
         Participants = 0;
         PlayerTeams = new HashMap<String, String>();
         //Set Every Player as Spectator
+    	Vector vec = Spawns.get("spectator");
+    	World world = Bukkit.getWorld("world");
+    	Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
         for (Player currentplayer : Bukkit.getOnlinePlayers()) {
-        	addTeam(currentplayer,"spectator");
+        	addTeam(currentplayer, "spectator");
+        	if(GameStatus == 1){
+        		currentplayer.teleport(loc);
+        	}
         }
+        GameStatus = 0;
 	}
 
 	private void queuePlayer(Player player) {
@@ -277,8 +286,6 @@ public class MCMEPVP extends JavaPlugin{
            public void run() {
 		        for (Player user : Bukkit.getOnlinePlayers()) {
 			        //Assign Teams
-		        	user.setHealth(20);
-		        	user.setFoodLevel(20);
 		        	if(PlayerTeams.get(user.getName()) == "participant"){
 						if(BlueMates > RedMates){
 							addTeam(user,"red");
@@ -297,13 +304,24 @@ public class MCMEPVP extends JavaPlugin{
 							}
 						}	
 		        	}
+		        	//heal
+		        	user.setHealth(20);
+		        	user.setFoodLevel(20);
+	        		//Give Weapons and Armour
+		        	PlayerInventory inv = user.getInventory();
+		        	inv.setItemInHand(new ItemStack(276));//Sword
+		        	inv.setChestplate(new ItemStack(311));//Armour
+		        	inv.setLeggings(new ItemStack(312));//Leggins
+		        	inv.setBoots(new ItemStack(313));//Boots
+		        	inv.addItem(new ItemStack(261),new ItemStack(262, 32));//Bow + Arrows
 		        	//Teleport User
 		        	Vector vec = Spawns.get(PlayerTeams.get(user.getName()));
 		        	World world = Bukkit.getWorld("world");
 		        	Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
 	        		user.teleport(loc);
-	        		user.sendMessage(ChatColor.GREEN + "The Fight begins!");
 		        }
+        		//Broadcast
+        		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The Fight begins!");
            }
         }, 100L);
 	}
