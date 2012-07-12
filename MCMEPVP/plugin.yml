@@ -4,7 +4,7 @@ version: 1.0.0
 commands:
    pvp:
       description: PVP
-      usage: /<command> [join|class|start|set|stop]
+      usage: /<command> [join|start|set|stop]
    shout:
       description: Shout a message to Everyone!
       usage: /<command> [msg]

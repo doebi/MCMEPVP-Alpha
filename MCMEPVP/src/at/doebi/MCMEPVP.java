@@ -23,7 +23,9 @@ public class MCMEPVP extends JavaPlugin{
 	public static int BlueMates;
 	public static int RedMates;
 	public static int GameStatus;
+	public static int GameMode;
 	public static int Participants;
+	public static String[] GameModes = {"TDM", "FFA"};
 
 	//onEnable, run when server starts
 	@Override
@@ -61,7 +63,7 @@ public class MCMEPVP extends JavaPlugin{
 			}else{
 				if(Team == "blue"){
 					BlueMates++;
-					PlayerTeams.put(player.getName(), "blue"); 
+					PlayerTeams.put(player.getName(), "blue");
 					player.setPlayerListName(ChatColor.BLUE + player.getName());
 					player.setDisplayName(ChatColor.BLUE + player.getName());
 					player.getInventory().setHelmet(new ItemStack(35, 1, (short) 0, (byte) 11));
@@ -265,6 +267,7 @@ public class MCMEPVP extends JavaPlugin{
         	}
         }
         GameStatus = 0;
+        GameMode = 0;
 	}
 
 	private void queuePlayer(Player player) {
@@ -280,49 +283,78 @@ public class MCMEPVP extends JavaPlugin{
 	private void startGame() {
 		GameStatus = 1;
         //Broadcast
-		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The PVP Event starts in a few seconds!");
-		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "All Participants will be assigned to a team and teleported to their spawn!");
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-           public void run() {
-		        for (Player user : Bukkit.getOnlinePlayers()) {
-			        //Assign Teams
-		        	if(PlayerTeams.get(user.getName()) == "participant"){
-						if(BlueMates > RedMates){
-							addTeam(user,"red");
-						}else{
-							if(BlueMates < RedMates){
-								addTeam(user,"blue");
-							}
-							else{
-								boolean random = (Math.random() < 0.5);
-								if(random == true){
-									addTeam(user,"red");
-								}
-								else{
+		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The PVP Event starts in a few seconds! GameMode is " + GameModes[GameMode] + "!");
+		switch (GameMode){
+		case 0://TDM
+			Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "All Participants will be assigned to a team and teleported to their spawn!");
+	        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+	           public void run() {
+			        for (Player user : Bukkit.getOnlinePlayers()) {
+				        //Assign Teams
+			        	if(PlayerTeams.get(user.getName()) == "participant"){
+							if(BlueMates > RedMates){
+								addTeam(user,"red");
+							}else{
+								if(BlueMates < RedMates){
 									addTeam(user,"blue");
 								}
-							}
-						}	
-		        	}
-		        	//heal
-		        	user.setHealth(20);
-		        	user.setFoodLevel(20);
-	        		//Give Weapons and Armour
-		        	PlayerInventory inv = user.getInventory();
-		        	inv.setItemInHand(new ItemStack(276));//Sword
-		        	inv.setChestplate(new ItemStack(311));//Armour
-		        	inv.setLeggings(new ItemStack(312));//Leggins
-		        	inv.setBoots(new ItemStack(313));//Boots
-		        	inv.addItem(new ItemStack(261),new ItemStack(262, 32));//Bow + Arrows
-		        	//Teleport User
-		        	Vector vec = Spawns.get(PlayerTeams.get(user.getName()));
-		        	World world = Bukkit.getWorld("world");
-		        	Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
-	        		user.teleport(loc);
-		        }
-        		//Broadcast
-        		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The Fight begins!");
-           }
-        }, 100L);
+								else{
+									boolean random = (Math.random() < 0.5);
+									if(random == true){
+										addTeam(user,"red");
+									}
+									else{
+										addTeam(user,"blue");
+									}
+								}
+							}	
+			        	}
+			        	//heal
+			        	user.setHealth(20);
+			        	user.setFoodLevel(20);
+		        		//Give Weapons and Armour
+			        	PlayerInventory inv = user.getInventory();
+			        	inv.setItemInHand(new ItemStack(276));//Sword
+			        	inv.setChestplate(new ItemStack(311));//Armour
+			        	inv.setLeggings(new ItemStack(312));//Leggins
+			        	inv.setBoots(new ItemStack(313));//Boots
+			        	inv.addItem(new ItemStack(261),new ItemStack(262, 32));//Bow + Arrows
+			        	//Teleport User
+			        	Vector vec = Spawns.get(PlayerTeams.get(user.getName()));
+			        	World world = Bukkit.getWorld("world");
+			        	Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
+		        		user.teleport(loc);
+			        }
+	        		//Broadcast
+	        		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The Fight begins!");
+	           }
+	        }, 100L);
+		case 1://FFA
+			Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "All Participants will be teleported!");
+	        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+	           public void run() {
+			        for (Player user : Bukkit.getOnlinePlayers()) {
+			        	//heal
+			        	user.setHealth(20);
+			        	user.setFoodLevel(20);
+		        		//Give Weapons and Armour
+			        	PlayerInventory inv = user.getInventory();
+			        	inv.setItemInHand(new ItemStack(276));//Sword
+			        	inv.setChestplate(new ItemStack(311));//Armour
+			        	inv.setLeggings(new ItemStack(312));//Leggins
+			        	inv.setBoots(new ItemStack(313));//Boots
+			        	inv.addItem(new ItemStack(261),new ItemStack(262, 32));//Bow + Arrows
+			        	//TODO How to handle teleport on FFA Games?
+			        	//Teleport User
+			        	Vector vec = Spawns.get("");
+			        	World world = Bukkit.getWorld("world");
+			        	Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
+		        		user.teleport(loc);
+			        }
+	        		//Broadcast
+	        		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The Fight begins!");
+	           }
+	        }, 100L);
+		}
 	}
 }
