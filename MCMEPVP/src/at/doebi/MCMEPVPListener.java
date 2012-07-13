@@ -2,13 +2,20 @@ package at.doebi;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -83,6 +90,34 @@ public class MCMEPVPListener implements Listener{
 		    	event.setCancelled(true);
 		    }
 		}
+		//hopefully this prevents players from shooting allies
+		if(event.getCause() == DamageCause.PROJECTILE) {
+		    Arrow a = (Arrow) event.getDamager();
+		    if(a.getShooter() instanceof Player) {
+		        Player Attacker = (Player) a.getShooter();
+				if(event.getDamager().getType().equals(EntityType.PLAYER) && event.getEntity().getType().equals(EntityType.PLAYER)){
+					Player Victim = (Player) event.getEntity();
+				    String AttackerTeam = MCMEPVP.PlayerTeams.get(Attacker.getName());
+				    String VictimTeam = MCMEPVP.PlayerTeams.get(Victim.getName());
+				    if(AttackerTeam != "spectator" && VictimTeam != "spectator" && AttackerTeam != "participant" && VictimTeam != "participant" && AttackerTeam != VictimTeam){
+				    	//Victim got attacked by Attacker and both are in rivaling Teams
+				    }else{
+				    	//Either friendly fire or Spectator or Participant involved in fight
+				    	Attacker.sendMessage(ChatColor.DARK_RED + "You can't attack " + Victim.getName() + "!");
+				    	event.setCancelled(true);
+				    }
+				}
+		    }
+		}
 	}
 	//TODO prevent player from taking off head
+	public void onInventoryClick (InventoryClickEvent event) {
+	    HumanEntity player = event.getWhoClicked();
+	    if (event.getSlotType() == SlotType.ARMOR) {
+	        if (player.getInventory().getHelmet().getType() != Material.AIR) {
+	        	//TODO send message to player on armor remove attempt
+	            event.setCancelled(true);
+	        }
+	    }
+	}
 }
