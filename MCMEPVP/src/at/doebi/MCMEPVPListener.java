@@ -43,7 +43,6 @@ public class MCMEPVPListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH)
 	void onPlayerDeath(final PlayerDeathEvent event){
 		event.getDrops().clear();
-		event.getDrops().add(new ItemStack(364, 1));
 		if(MCMEPVP.GameStatus == 1){
 			Player player = event.getEntity();
 			String Team = MCMEPVP.PlayerTeams.get(player.getName());
@@ -52,9 +51,11 @@ public class MCMEPVPListener implements Listener{
 			}
 			if(Team == "red"){
 				event.setDeathMessage(ChatColor.RED + "Team Red " + ChatColor.YELLOW + "lost " + player.getName());
+				event.getDrops().add(new ItemStack(364, 1));
 			}
 			if(Team =="blue"){
 				event.setDeathMessage(ChatColor.BLUE + "Team Blue " + ChatColor.YELLOW + "lost " + player.getName());
+				event.getDrops().add(new ItemStack(364, 1));
 			}
 			MCMEPVP.removeTeam(event.getEntity());
 			if(MCMEPVP.BlueMates == 0){
@@ -83,4 +84,5 @@ public class MCMEPVPListener implements Listener{
 		    }
 		}
 	}
+	//TODO prevent player from taking off head
 }
